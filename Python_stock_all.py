@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 
 
 #############################
-def daily_report(day):
+def daily_report(year, month, day):
     url = 'http://app.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX.php'
     payload = ({'download': 'csv',
-                'qdate':day,#'106/10/24',
+                'qdate':str(year)+'/'+str(month)+'/'+str(day),#'106/10/24',
                 'selectType':'ALL',})
     r = requests.post(url, data = payload)
 
@@ -269,13 +269,13 @@ pd.Series(history, index=dates).cumprod().plot()
 
 
 
-#print (daily_report('106/10/24'))
+#print (daily_report(106,10,24))
 
 
 
 
 # 民國100年1月
-#print(monthly_report(105,1))
+print(monthly_report(105,1))
 
 # 西元2011年1月
 #print(monthly_report(106,10))
@@ -283,7 +283,7 @@ pd.Series(history, index=dates).cumprod().plot()
 
 
 
-print(financial_statement(107, 3, '營益分析彙總表').drop(['合計：共 809 家'], axis=1).set_index(['公司名稱']).astype(float))
+#print(financial_statement(107, 3, '營益分析彙總表').drop(['合計：共 809 家'], axis=1).set_index(['公司名稱']).astype(float))
 
 
 

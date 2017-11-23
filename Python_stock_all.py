@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 #############################
-def daily_report(year, month, day):
+def daily_report(year, month, day, filename):
     url = 'http://app.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX.php'
     payload = ({'download': 'csv',
                 'qdate':str(year)+'/'+str(month)+'/'+str(day),#'106/10/24',
@@ -42,6 +42,10 @@ def daily_report(year, month, day):
     #print(df.describe())
     #print (df)
     #df.columns = df[0].loc[3][1:]
+    df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價',
+                               '最後揭示買量','最後揭示賣價','最後揭示賣量'], axis=1)
+    #del df['最後揭示買量']
+    df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
     return df
 '''
 df = pd.read_csv(StringIO("\n".join([i.translate({ord(c): None for c in ' '}) 
@@ -115,33 +119,35 @@ def monthly_report(year, month):
 
 #############################
 
-def financial_statement(year, season, type='綜合損益彙總表'):
+def financial_statement(year, season, table):#='綜合損益彙總表'):
     if year >= 1000:
         year -= 1911
         
-    if type == '綜合損益彙總表':
+    if table == 1:#'綜合損益彙總表':
         #url = 'http://mops.twse.com.tw/mops/web/ajax_t163sb04'
         url = 'http://mops.twse.com.tw/mops/web/t163sb04'
-    elif type == '資產負債彙總表':
+    elif table == 2:# '資產負債彙總表':
         url = 'http://mops.twse.com.tw/mops/web/ajax_t163sb05'
-    elif type == '營益分析彙總表':
+    elif table == 3:#'營益分析彙總表':
         url = 'http://mops.twse.com.tw/mops/web/ajax_t163sb06'
     else:
         print('type does not match')
+        
+
     r = requests.post(url, {
         'encodeURIComponent':1,
         'step':1,
         'firstin':1,
         'off':1,
         'TYPEK':'sii',
-        'year':'103',
+        'year':'106',
         'season':'01',
     })
     
     r.encoding = 'utf8'
     dfs = pd.read_html(r.text)
     
-    
+    '''
     for i, df in enumerate(dfs):
         df.columns = df.iloc[0]
         dfs[i] = df.iloc[1:]
@@ -149,13 +155,15 @@ def financial_statement(year, season, type='綜合損益彙總表'):
     df = pd.concat(dfs).applymap(lambda x: x if x != '--' else np.nan)
     df = df[df['公司代號'] != '公司代號']
     df = df[~df['公司代號'].isnull()]
+    
     return df
+    '''
 
 
    
 
 
-    return df
+    return dfs
 
 #df = financial_statement(107, 3, '營益分析彙總表')
     #df = df.drop(['合計：共 808 家'], axis=1)
@@ -261,21 +269,27 @@ pd.Series(history, index=dates).cumprod().plot()
 
 
 #############################
+'''
+f = open('檔案', '模式')
 
-
-
+r - 讀取(檔案需存在)
+w - 新建檔案寫入(檔案可不存在，若存在則清空)
+a - 資料附加到舊檔案後面(游標指在EOF)
+r+ - 讀取舊資料並寫入(檔案需存在且游標指在開頭)
+w+ - 清空檔案內容，新寫入的東西可在讀出(檔案可不存在，會自行新增)
+a+ - 資料附加到舊檔案後面(游標指在EOF)，可讀取資料
+b - 二進位模式
+'''
 
 #############################
 
 
-
 #print (daily_report(106,10,24))
-
-
-
+daily_report(106, 10, 24, '122345.txt')
+print('Done')
 
 # 民國100年1月
-print(monthly_report(105,1))
+#print(monthly_report(105,1))
 
 # 西元2011年1月
 #print(monthly_report(106,10))
@@ -283,7 +297,10 @@ print(monthly_report(105,1))
 
 
 
-#print(financial_statement(107, 3, '營益分析彙總表').drop(['合計：共 809 家'], axis=1).set_index(['公司名稱']).astype(float))
+#print(financial_statement(107, 3, 1).drop(['合計：共 809 家'], axis=1).set_index(['公司名稱']).astype(float))
+#f.write(print(financial_statement(107, 1, 1)))
+#print(f.read())
+
 
 
 

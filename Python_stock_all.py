@@ -44,6 +44,7 @@ def daily_report(year, month, day, filename):
     #df.columns = df[0].loc[3][1:]
     df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價',
                                '最後揭示買量','最後揭示賣價','最後揭示賣量'], axis=1)
+
     #del df['最後揭示買量']
     df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
     return df
@@ -73,15 +74,14 @@ print (strp)
 
 
 #############################
-def monthly_report(year, month):
+def monthly_report(year, month, filename):
     
     # 假如是西元，轉成民國
     if year > 1990:
         year -= 1911
     
     # 下載該年月的網站，並用pandas轉換成 dataframe
-    html_df = pd.read_html('http://mops.twse.com.tw/nas/t21/sii/t21sc03_'+str(year)+'_'+str(month)+'_0.html')
-
+    html_df = pd.read_html('http://mops.twse.com.tw/nas/t21/sii/t21sc03_'+str(year)+'_'+str(month)+'_0.html'
 
     
     # 將每一張 dataframe 做整理
@@ -109,7 +109,10 @@ def monthly_report(year, month):
     
     # dataframe每一個column命名
     df.columns = dfs[0].loc[3][1:]
-    return df
+    
+    
+    df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
+    return html_df
 
 
 
@@ -119,7 +122,7 @@ def monthly_report(year, month):
 
 #############################
 
-def financial_statement(year, season, table):#='綜合損益彙總表'):
+def financial_statement(year, season, table, filename):#='綜合損益彙總表'):
     if year >= 1000:
         year -= 1911
         
@@ -162,7 +165,7 @@ def financial_statement(year, season, table):#='綜合損益彙總表'):
 
    
 
-
+    dfs.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
     return dfs
 
 #df = financial_statement(107, 3, '營益分析彙總表')
@@ -285,11 +288,11 @@ b - 二進位模式
 
 
 #print (daily_report(106,10,24))
-daily_report(106, 10, 24, '122345.txt')
-print('Done')
+#daily_report(106, 10, 24, '122345.txt')
+
 
 # 民國100年1月
-#print(monthly_report(105,1))
+monthly_report(105, 1, '55555.txt')
 
 # 西元2011年1月
 #print(monthly_report(106,10))
@@ -299,9 +302,10 @@ print('Done')
 
 #print(financial_statement(107, 3, 1).drop(['合計：共 809 家'], axis=1).set_index(['公司名稱']).astype(float))
 #f.write(print(financial_statement(107, 1, 1)))
+#financial_statement(107, 1, 1, '666666.txt')
 #print(f.read())
 
-
+print ('Done')
 
 
 

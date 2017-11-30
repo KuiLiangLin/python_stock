@@ -1,5 +1,5 @@
 import sys
-import re
+#import re
 import requests
 from io import StringIO
 import pandas as pd
@@ -11,13 +11,13 @@ import time
 
 
 #############################
-def daily_report(year, month, day, filename):
-    print ('read csv : ', year, month, day, time.strftime("...... %H:%M:%S"))
+def daily_report(year, month, day):
+    print ('-read csv:', year, month, day, time.strftime("...... %H:%M:%S"))
     url = 'http://app.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX.php'
     payload = ({'download': 'csv',
                 'qdate':str(year)+'/'+str(month)+'/'+str(day),#'106/10/24',
                 'selectType':'ALL',})
-
+    filename = 'daily_'+str(year)+str(month)+str(day)+'.txt'
     try:
         r = requests.post(url, data = payload)
 
@@ -28,7 +28,7 @@ def daily_report(year, month, day, filename):
             'selectType':'ALL',
         })
         '''
-        print ('encoding')
+        
         r.encoding = 'big5'
         #r.encoding = 'utf-8'
         '''
@@ -37,28 +37,28 @@ def daily_report(year, month, day, filename):
                 print (StringIO("\n".join(i.translate({ord(c): None for c in ' '}))))
         '''
 
-        print ('clean')
+        
 
         df = pd.read_csv(StringIO("\n".join([i.translate({ord(c): None for c in ' '}) 
                                              for i in r.text.split('\n') 
                                              if len(i.split('",')) == 16 and i[0] != '='])),
                          header=0)
-        print('drop')
+        
         #print(df.describe())
         #print (df)
         #df.columns = df[0].loc[3][1:]
         df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價',
                                    '最後揭示買量','最後揭示賣價','最後揭示賣量'], axis=1)
-        print('write to file : ', filename)
+        print('-Write to file:', filename)
         #del df['最後揭示買量']
         df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
         #print('write to file:'+filename)
         return df
     except BaseException:
-        print("no data")
+        print("-No Data")
         return 0
     else:
-        print("get data")
+        print("-Get Data")
 '''
 df = pd.read_csv(StringIO("\n".join([i.translate({ord(c): None for c in ' '}) 
                                      for i in r.text.split('\n') 
@@ -308,7 +308,7 @@ b - 二進位模式
 #############################
 
 #print (daily_report(106,10,24))
-daily_report(sys.argv[1], sys.argv[2], sys.argv[3], '122345.txt')
+daily_report(sys.argv[1], sys.argv[2], sys.argv[3])
 #daily_report(106, 10, 24, '122345.txt')
 
 # 民國100年1月
@@ -325,7 +325,7 @@ daily_report(sys.argv[1], sys.argv[2], sys.argv[3], '122345.txt')
 #financial_statement(107, 1, 1, '666666.txt')
 #print(f.read())
 
-print ('Done')
+#print ('Done')
 
 
 

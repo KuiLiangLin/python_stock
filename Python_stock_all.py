@@ -1,53 +1,64 @@
-
+import sys
+import re
 import requests
 from io import StringIO
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+import time
 #############################
 
 
 
 #############################
 def daily_report(year, month, day, filename):
+    print ('read csv : ', year, month, day, time.strftime("...... %H:%M:%S"))
     url = 'http://app.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX.php'
     payload = ({'download': 'csv',
                 'qdate':str(year)+'/'+str(month)+'/'+str(day),#'106/10/24',
                 'selectType':'ALL',})
-    r = requests.post(url, data = payload)
 
+    try:
+        r = requests.post(url, data = payload)
 
-    '''
-    r = requests.post('http://app.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX.php', data={
-        'download': 'csv',
-        'qdate':'106/10/24',
-        'selectType':'ALL',
-    })
-    '''
+        '''
+        r = requests.post('http://app.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX.php', data={
+            'download': 'csv',
+            'qdate':'106/10/24',
+            'selectType':'ALL',
+        })
+        '''
+        print ('encoding')
+        r.encoding = 'big5'
+        #r.encoding = 'utf-8'
+        '''
+        for i in r.text.split('\n') :
+            if len(i.split('",')) == 16 and i[0] != '=' :
+                print (StringIO("\n".join(i.translate({ord(c): None for c in ' '}))))
+        '''
 
-    r.encoding = 'big5'
-    #r.encoding = 'utf-8'
-    '''
-    for i in r.text.split('\n') :
-        if len(i.split('",')) == 16 and i[0] != '=' :
-            print (StringIO("\n".join(i.translate({ord(c): None for c in ' '}))))
-    '''
+        print ('clean')
 
-
-    df = pd.read_csv(StringIO("\n".join([i.translate({ord(c): None for c in ' '}) 
-                                         for i in r.text.split('\n') 
-                                         if len(i.split('",')) == 16 and i[0] != '='])),
-                     header=0)
-    #print(df.describe())
-    #print (df)
-    #df.columns = df[0].loc[3][1:]
-    df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價',
-                               '最後揭示買量','最後揭示賣價','最後揭示賣量'], axis=1)
-
-    #del df['最後揭示買量']
-    df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
-    return df
+        df = pd.read_csv(StringIO("\n".join([i.translate({ord(c): None for c in ' '}) 
+                                             for i in r.text.split('\n') 
+                                             if len(i.split('",')) == 16 and i[0] != '='])),
+                         header=0)
+        print('drop')
+        #print(df.describe())
+        #print (df)
+        #df.columns = df[0].loc[3][1:]
+        df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價',
+                                   '最後揭示買量','最後揭示賣價','最後揭示賣量'], axis=1)
+        print('write to file : ', filename)
+        #del df['最後揭示買量']
+        df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
+        #print('write to file:'+filename)
+        return df
+    except BaseException:
+        print("no data")
+        return 0
+    else:
+        print("get data")
 '''
 df = pd.read_csv(StringIO("\n".join([i.translate({ord(c): None for c in ' '}) 
                                      for i in r.text.split('\n') 
@@ -79,11 +90,19 @@ def monthly_report(year, month, filename):
     # 假如是西元，轉成民國
     if year > 1990:
         year -= 1911
-    
+    print ('read html', year, month, sep = ' ', end = '\n')
     # 下載該年月的網站，並用pandas轉換成 dataframe
-    html_df = pd.read_html('http://mops.twse.com.tw/nas/t21/sii/t21sc03_'+str(year)+'_'+str(month)+'_0.html'
-
-    
+    html_df = pd.read_html('http://mops.twse.com.tw/nas/t21/sii/t21sc03_'
+                           +str(year)+'_'+str(month)+'_0.html')
+    print ('clean')
+    dfs = []
+    for i in html_df:
+        try:
+            dfs.append(i[list(range(0,10))])
+        except:
+            print('**WARRN: cannot process DataFrame:\n')
+    df = pd.concat(dfs)
+    '''
     # 將每一張 dataframe 做整理
     def clean_df(df):
         df = df.copy()
@@ -102,7 +121,7 @@ def monthly_report(year, month, filename):
     
     # 將所有的 dataframe 合併
     df = pd.concat(dfs)
-    
+    '''
     # 再刪除一些冗於的row
     df = df.set_index(0).drop(['合計','公司代號'], axis=0)
     df = df[~df.index.isnull()]
@@ -110,9 +129,11 @@ def monthly_report(year, month, filename):
     # dataframe每一個column命名
     df.columns = dfs[0].loc[3][1:]
     
+    print ('write to file : ', filename)
+    df.to_csv( filename, sep = '\t', encoding = 'utf8', index = True)
     
-    df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
-    return html_df
+                           
+    return df
 
 
 
@@ -286,16 +307,15 @@ b - 二進位模式
 
 #############################
 
-
 #print (daily_report(106,10,24))
+daily_report(sys.argv[1], sys.argv[2], sys.argv[3], '122345.txt')
 #daily_report(106, 10, 24, '122345.txt')
 
-
 # 民國100年1月
-monthly_report(105, 1, '55555.txt')
+#monthly_report(105, 1, '55555.txt')
 
 # 西元2011年1月
-#print(monthly_report(106,10))
+#print(monthly_report(106, 10, '55555.csv'))
 
 
 

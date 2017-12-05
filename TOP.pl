@@ -10,28 +10,58 @@ season : balance income
 year : dividend finicial
 =cut
 
-my $yearstart = 2000;
-my $yearend = 2017;
+my $yearstart = 106;
+my $yearend = 106;
 my $monthstart = 1;
 my $monthend = 12;
+my $daystart = 1;
+my $dayend = 31;
 my @input_4;
-=hader
-print "\n ~~~~ TOP => Python daily ~~~~ \n\n";
-system "python daily_report.py 106 11 24";
-system "python daily_report.py 106 11 25";
-system "python daily_report.py 106 11 26";
-system "python daily_report.py 106 11 27";
-=cut
 
+
+print "\n ~~~~ TOP => Python daily ~~~~ \n\n";
+for (my $year = $yearstart; $year <= $yearend; $year++){
+	for (my $month = $monthstart; $month <= $monthend; $month++){
+        for (my $day = $daystart; $day <= $dayend; $day++){
+            my $a, $b;
+            if ($month>=10){
+				$a = " $month ";
+				$a =~ s/ //g;
+			}else{
+				$a = " 0 $month ";
+				$a =~ s/ //g;
+            }
+            if ($day>=10){
+				$b = " $day ";
+				$b =~ s/ //g;
+			}else{
+				$b = " 0 $day ";
+				$b =~ s/ //g;                  
+            }
+            system "python daily_report.py $year $a $b";
+        };
+    };
+};
+
+
+=header
 print "\n ~~~~ TOP => Python monthly ~~~~ \n\n";
 
 system "python monthly_report.py 106 02";
 system "python monthly_report.py 106 03";
 system "python monthly_report.py 106 04";
 system "python monthly_report.py 106 05";
+=cut
 
 
+=header
+print "\n ~~~~ TOP => Python season ~~~~ \n\n";
 
+system "python season_report.py 105 01 1";
+system "python season_report.py 105 02 1";
+system "python season_report.py 105 03 1";
+system "python season_report.py 105 04 1";
+=cut
 
 
 #system "perl GetStockNumber.pl";

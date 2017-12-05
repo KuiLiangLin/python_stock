@@ -45,8 +45,8 @@ try:
     #print(df.describe())
     #print (df)
     #df.columns = df[0].loc[3][1:]
-    df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價',
-                               '最後揭示買量','最後揭示賣價','最後揭示賣量'], axis=1)
+    df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價','最後揭示買量','最後揭示賣價',
+    '最後揭示賣量','開盤價','最高價','最低價'], axis=1)
     print(' -Write to file:', filename)
     #del df['最後揭示買量']
     df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)

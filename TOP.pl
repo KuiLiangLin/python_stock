@@ -2,28 +2,25 @@
 use warnings; use strict;
 use LWP::Simple;
 
-=header
-system "perl name.pl yearstart yearend monthstart monthend";
-daily : acredit foreign netbuy skill zhuli
-month : asale
-season : balance income
-year : dividend finicial
-=cut
 
+################################ 
+###### daily report data
+################################ 
+=header
 my $yearstart = 106;
 my $yearend = 106;
 my $monthstart = 1;
 my $monthend = 12;
-my $daystart = 1;
+my $daystart = 2;
 my $dayend = 31;
 my @input_4;
 
-
 print "\n ~~~~ TOP => Python daily ~~~~ \n\n";
+
 for (my $year = $yearstart; $year <= $yearend; $year++){
 	for (my $month = $monthstart; $month <= $monthend; $month++){
         for (my $day = $daystart; $day <= $dayend; $day++){
-            my $a, $b;
+            my $a = 12, $b = 12;
             if ($month>=10){
 				$a = " $month ";
 				$a =~ s/ //g;
@@ -42,16 +39,42 @@ for (my $year = $yearstart; $year <= $yearend; $year++){
         };
     };
 };
-
-
-=header
-print "\n ~~~~ TOP => Python monthly ~~~~ \n\n";
-
-system "python monthly_report.py 106 02";
-system "python monthly_report.py 106 03";
-system "python monthly_report.py 106 04";
-system "python monthly_report.py 106 05";
 =cut
+
+
+################################ 
+###### monthly report data
+################################ 
+my $yearstart = 106;
+my $yearend = 106;
+my $monthstart = 1;
+my $monthend = 12;
+
+print "\n ~~~~ TOP => Python monthly ~~~~ \n\n";
+print " ~~~~ Year from $yearstart to $yearend ~~~~ \n";
+print " ~~~~ Month from $monthstart to $monthend ~~~~ \n\n";
+
+for (my $year = $yearstart; $year <= $yearend; $year++){
+	for (my $month = $monthstart; $month <= $monthend; $month++){
+
+        system "python monthly_report.py $year $month";
+        #system "python monthly_report.py 106 03";
+        #system "python monthly_report.py 106 04";
+        #system "python monthly_report.py 106 05";
+    };
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 =header

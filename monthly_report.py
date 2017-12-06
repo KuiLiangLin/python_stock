@@ -7,12 +7,19 @@ import time
 year = sys.argv[1]
 month = sys.argv[2]
 
-print (' -Read html:', year, month, sep = ' ', end = '\n')
+print (' -Read html:', year, month, time.strftime("...... %H:%M:%S"), sep = ' ', end = '\n')
 # 下載該年月的網站，並用pandas轉換成 dataframe
 html_df = pd.read_html('http://mops.twse.com.tw/nas/t21/sii/t21sc03_'+str(year)+'_'+str(month)+'_0.html')
 
-filename = 'monthly_'+str(year)+str(month)+'.txt'
-
+#filename = 'monthly_'+str(year)+str(month)+'.txt'
+if month == 10 :
+    filename = str(year)+str(month)+'.txt'
+elif month == 11 :
+    filename = str(year)+str(month)+'.txt'
+elif month == 12 :
+    filename = str(year)+str(month)+'.txt'
+else :
+    filename = str(year)+'0'+str(month)+'.txt'
 try:
     dfs = []
     for i in html_df:
@@ -50,7 +57,7 @@ try:
     df.columns = dfs[0].loc[3][1:]
 
     print(' -Write to file:', filename)
-    df.to_csv( filename, sep = '\t', encoding = 'utf8', index = True)
+    df.to_csv( './monthly_report_data/'+filename, sep = '\t', encoding = 'utf8', index = True)
 except BaseException:
     print(" -No Data")
 

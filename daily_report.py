@@ -14,8 +14,8 @@ url = 'http://app.twse.com.tw/ch/trading/exchange/MI_INDEX/MI_INDEX.php'
 payload = ({'download': 'csv',
             'qdate':str(year)+'/'+str(month)+'/'+str(day),#'106/10/24',
             'selectType':'ALL',})
-filename = 'daily_'+str(year)+str(month)+str(day)+'.txt'
-
+#filename = 'daily_'+str(year)+str(month)+str(day)+'.txt'
+filename = str(year)+str(month)+str(day)+'.txt'
 try:
     r = requests.post(url, data = payload)
 
@@ -46,10 +46,10 @@ try:
     #print (df)
     #df.columns = df[0].loc[3][1:]
     df = df.drop(['漲跌(+/-)','漲跌價差','最後揭示買價','最後揭示買量','最後揭示賣價',
-    '最後揭示賣量','開盤價','最高價','最低價'], axis=1)
+    '最後揭示賣量','開盤價','最高價','最低價','成交金額','成交筆數'], axis=1)
     print(' -Write to file:', filename)
     #del df['最後揭示買量']
-    df.to_csv( filename, sep = '\t', encoding = 'utf8', index = False)
+    df.to_csv( './daily_report_data/'+filename, sep = '\t', encoding = 'utf8', index = False)
 
 except BaseException:
     print(" -No Data")

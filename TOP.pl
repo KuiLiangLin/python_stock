@@ -16,6 +16,9 @@ my $dayend = 31;
 my @input_4;
 
 print "\n ~~~~ TOP => Python daily ~~~~ \n\n";
+print " ~~~~ Year from $yearstart to $yearend ~~~~ \n";
+print " ~~~~ Month from $monthstart to $monthend ~~~~ \n\n";
+print " ~~~~ Month from $daystart to $dayend ~~~~ \n\n";
 
 for (my $year = $yearstart; $year <= $yearend; $year++){
 	for (my $month = $monthstart; $month <= $monthend; $month++){
@@ -47,8 +50,8 @@ for (my $year = $yearstart; $year <= $yearend; $year++){
 ################################ 
 my $yearstart = 106;
 my $yearend = 106;
-my $monthstart = 1;
-my $monthend = 12;
+my $monthstart = 9;
+my $monthend = 10;
 
 print "\n ~~~~ TOP => Python monthly ~~~~ \n\n";
 print " ~~~~ Year from $yearstart to $yearend ~~~~ \n";
